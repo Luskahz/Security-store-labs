@@ -1,0 +1,11 @@
+package br.edu.securitystore.sales;
+import br.edu.securitystore.catalog.*; import br.edu.securitystore.iam.*; import jakarta.transaction.Transactional; import jakarta.validation.Valid; import jakarta.validation.constraints.*; import java.security.Principal; import java.util.List; import org.springframework.http.*; import org.springframework.security.core.Authentication; import org.springframework.web.bind.annotation.*;
+@RestController @RequestMapping("/api/orders") public class OrderController {
+ private final OrderRepository orders; private final ProductRepository products; private final UserRepository users; public OrderController(OrderRepository o,ProductRepository p,UserRepository u){orders=o;products=p;users=u;}
+ public record CreateOrder(@NotNull Long productId,@Min(1) int quantity){} public record PaymentRequest(@NotBlank String method){} public record DeliveryRequest(@NotNull Order.DeliveryStatus status){}
+ @GetMapping public List<Order> list(Authentication a){boolean admin=a.getAuthorities().stream().anyMatch(x->x.getAuthority().equals("ROLE_ADMIN"));return admin?orders.findAll():orders.findByCustomerEmailIgnoreCase(a.getName());}
+ @PostMapping @Transactional public ResponseEntity<Order> create(@Valid @RequestBody CreateOrder r,Principal principal){Product p=products.findById(r.productId()).orElseThrow();p.removeStock(r.quantity());UserAccount u=users.findByEmailIgnoreCase(principal.getName()).orElseThrow();return ResponseEntity.status(HttpStatus.CREATED).body(orders.save(new Order(u,p,r.quantity())));}
+ @PostMapping("/{id}/pay") public Order pay(@PathVariable Long id,Principal principal,@Valid @RequestBody PaymentRequest ignored){Order o=owned(id,principal.getName());o.pay();return orders.save(o);}
+ @PatchMapping("/{id}/delivery") public Order delivery(@PathVariable Long id,@Valid @RequestBody DeliveryRequest r){Order o=orders.findById(id).orElseThrow();o.setDeliveryStatus(r.status());return orders.save(o);}
+ private Order owned(Long id,String email){Order o=orders.findById(id).orElseThrow();if(!o.getCustomer().getEmail().equalsIgnoreCase(email))throw new org.springframework.security.access.AccessDeniedException("Pedido de outro usuário");return o;}
+}

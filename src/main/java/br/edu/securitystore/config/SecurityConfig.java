@@ -17,7 +17,8 @@ public class SecurityConfig {
     @Bean UserDetailsService userDetailsService(UserRepository users){return email->{var u=users.findByEmailIgnoreCase(email).orElseThrow(()->new UsernameNotFoundException("Usuário não encontrado"));return User.withUsername(u.getEmail()).password(u.getPasswordHash()).roles(u.getRole()).build();};}
     @Bean SecurityFilterChain security(HttpSecurity http) throws Exception {
         return http.csrf(csrf->csrf.disable()).authorizeHttpRequests(auth->auth
-            .requestMatchers("/","/index.html","/styles.css","/app.js","/api/iam/register","/api/products").permitAll()
+            .requestMatchers("/","/index.html","/styles.css","/app.js","/api/iam/register").permitAll()
+            .requestMatchers(HttpMethod.GET,"/api/products").permitAll()
             .requestMatchers(HttpMethod.POST,"/api/products/**").hasRole("ADMIN")
             .requestMatchers(HttpMethod.DELETE,"/api/products/**").hasRole("ADMIN")
             .requestMatchers(HttpMethod.PATCH,"/api/orders/**").hasRole("ADMIN")

@@ -8,11 +8,9 @@ public record OrderResponse(Long id, Customer customer, ProductSummary product, 
     public record ProductSummary(Long id, String name, String description, BigDecimal price, int stock) {}
 
     public static OrderResponse from(Order order) {
-        var customer = order.getCustomer();
-        var product = order.getProduct();
         return new OrderResponse(order.getId(),
-                new Customer(customer.getId(), customer.getName(), customer.getEmail(), customer.getRole()),
-                new ProductSummary(product.getId(), product.getName(), product.getDescription(), product.getPrice(), product.getStock()),
+                new Customer(order.getCustomerId(), order.getCustomerName(), order.getCustomerEmail(), order.getCustomerRole()),
+                new ProductSummary(order.getProductId(), order.getProductName(), order.getProductDescription(), order.getProductPrice(), order.getProductStockAtPurchase()),
                 order.getQuantity(), order.getTotal(), order.getPaymentStatus(), order.getDeliveryStatus());
     }
 }

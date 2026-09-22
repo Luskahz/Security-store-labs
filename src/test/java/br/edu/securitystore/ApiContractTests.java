@@ -33,6 +33,13 @@ class ApiContractTests {
                 .andExpect(status().isForbidden());
     }
 
+    @Test void registrationValidationUsesProblemDetails() throws Exception {
+        mvc.perform(post("/api/iam/register").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"Teste\",\"email\":\"teste@lab.local\",\"password\":null}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("Dados da requisição inválidos"));
+    }
+
     @Test void orderResponseDoesNotExposePasswordHash() throws Exception {
         mvc.perform(post("/api/orders").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic("aluno@lab.local", "Aluno123!"))
                 .contentType(MediaType.APPLICATION_JSON).content("{\"productId\":1,\"quantity\":1}"))

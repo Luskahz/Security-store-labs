@@ -19,8 +19,9 @@ Como desenvolvedor, quero pacotes separados de IAM, catálogo e vendas para loca
 ### US-003 — Documentar e observar a API (P1)
 Como estudante, quero OpenAPI e logs com correlação para entender chamadas sem registrar senhas, tokens ou dados de pagamento.
 
-### US-004 — Padronizar erros (P1)
+### US-004 — Padronizar erros (P1) — PARCIAL
 Como cliente da API, quero erros JSON consistentes, sem stack traces ou detalhes internos.
+Problemas comuns retornam Problem Details; ainda falta cobrir sistematicamente validação e todos os erros de domínio.
 
 ## Épico 2 — IAM
 
@@ -67,8 +68,9 @@ Como cliente, quero marcar meu pedido como pago usando um método fictício, sem
 ### US-304 — Atualizar entrega (P0) — CONCLUÍDA
 Como administrador, quero alterar o status logístico de um pedido.
 
-### US-305 — Garantir idempotência e transações (P1)
+### US-305 — Garantir idempotência e transações (P1) — PARCIAL
 Como sistema, quero impedir cobrança repetida e estoque negativo em requisições concorrentes.
+Reserva de estoque usa lock pessimista e pagamento mockado pode ser repetido; falta teste de concorrência e chave de idempotência para pedidos.
 
 ## Épico 5 — Frontend
 

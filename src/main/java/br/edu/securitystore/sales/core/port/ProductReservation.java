@@ -1,6 +1,5 @@
 package br.edu.securitystore.sales.core.port;
-import java.math.BigDecimal;
+import br.edu.securitystore.sales.core.domain.Order;
 public interface ProductReservation {
-    record ReservedProduct(Long id, String name, String description, BigDecimal price, int stock) {}
-    ReservedProduct reserve(Long productId, int quantity);
+    Order.ProductSnapshot reserve(Long productId, int quantity);
 }

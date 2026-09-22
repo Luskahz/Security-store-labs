@@ -1,5 +1,5 @@
 package br.edu.securitystore.sales.core.port;
+import br.edu.securitystore.sales.core.domain.Order;
 public interface CustomerLookup {
-    record Customer(Long id, String name, String email, String role) {}
-    Customer byEmail(String email);
+    Order.CustomerSnapshot byEmail(String email);
 }

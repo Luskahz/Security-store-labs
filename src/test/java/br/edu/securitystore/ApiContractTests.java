@@ -29,4 +29,12 @@ class ApiContractTests {
                 .contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"Teste\",\"price\":1,\"stock\":1}"))
                 .andExpect(status().isForbidden());
     }
+
+    @Test void orderResponseDoesNotExposePasswordHash() throws Exception {
+        mvc.perform(post("/api/orders").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic("aluno@lab.local", "Aluno123!"))
+                .contentType(MediaType.APPLICATION_JSON).content("{\"productId\":1,\"quantity\":1}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.customer.passwordHash").doesNotExist())
+                .andExpect(jsonPath("$.total").value(149.90));
+    }
 }

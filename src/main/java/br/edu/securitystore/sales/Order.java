@@ -36,7 +36,7 @@ public class Order {
     public BigDecimal getProductPrice() { return productPrice; } public int getProductStockAtPurchase() { return productStockAtPurchase; }
     public int getQuantity() { return quantity; } public BigDecimal getTotal() { return total; }
     public PaymentStatus getPaymentStatus() { return paymentStatus; } public DeliveryStatus getDeliveryStatus() { return deliveryStatus; }
-    public void pay() { paymentStatus = PaymentStatus.PAID; }
+    public void pay() { if (paymentStatus == PaymentStatus.PENDING) paymentStatus = PaymentStatus.PAID; }
     public void setDeliveryStatus(DeliveryStatus status) { deliveryStatus = status; }
     public enum PaymentStatus { PENDING, PAID, REFUNDED }
     public enum DeliveryStatus { PREPARING, SHIPPED, DELIVERED, CANCELLED }

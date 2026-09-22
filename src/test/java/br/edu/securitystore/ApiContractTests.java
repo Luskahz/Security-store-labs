@@ -9,10 +9,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 
 @SpringBootTest @AutoConfigureMockMvc
 class ApiContractTests {
     @Autowired MockMvc mvc;
+    @Autowired ObjectMapper json;
 
     @Test void publicCatalogIsReadable() throws Exception {
         mvc.perform(get("/api/products")).andExpect(status().isOk()).andExpect(jsonPath("$[0].name").exists());
@@ -36,5 +39,22 @@ class ApiContractTests {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.customer.passwordHash").doesNotExist())
                 .andExpect(jsonPath("$.total").value(149.90));
+    }
+
+    @Test void orderLifecycleAndOwnership() throws Exception {
+        var customer = SecurityMockMvcRequestPostProcessors.httpBasic("aluno@lab.local", "Aluno123!");
+        String orderJson = mvc.perform(post("/api/orders").with(customer).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"productId\":2,\"quantity\":1}"))
+                .andExpect(status().isCreated()).andExpect(jsonPath("$.paymentStatus").value("PENDING"))
+                .andReturn().getResponse().getContentAsString();
+        long orderId = json.readTree(orderJson).get("id").asLong();
+        mvc.perform(post("/api/orders/" + orderId + "/pay").with(customer).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"method\":\"MOCK\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.paymentStatus").value("PAID"));
+        mvc.perform(get("/api/orders").with(customer)).andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].customer.passwordHash").doesNotExist());
+        mvc.perform(patch("/api/orders/" + orderId + "/delivery").with(customer).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"status\":\"SHIPPED\"}"))
+                .andExpect(status().isForbidden());
     }
 }

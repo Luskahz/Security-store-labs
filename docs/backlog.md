@@ -34,7 +34,7 @@ Como usuário, quero autenticar via HTTP Basic e consultar `/api/iam/me`. Aceite
 ### US-103 — Autorizar por papel (P0) — CONCLUÍDA
 Como administrador, quero que operações administrativas exijam `ADMIN`; clientes usam `CUSTOMER`.
 
-### US-104 — Implementar tokens de sessão (P1)
+### US-104 — Implementar tokens de sessão (P1) — CONCLUÍDA
 Como usuário, quero login com token curto e renovação controlada. Aceite: expiração, logout/revogação e segredo fora do repositório.
 
 ### US-105 — Recuperar senha de laboratório (P2)

@@ -2,7 +2,7 @@ package br.edu.securitystore.iam.authentication.api.http.controller;
 
 import br.edu.securitystore.iam.authentication.core.application.AuthenticationService;
 import br.edu.securitystore.iam.authentication.core.domain.Session;
-import br.edu.securitystore.iam.authorization.api.module.AuthoritiesQuery;
+import br.edu.securitystore.iam.authorization.api.module.AuthorizationQuery;
 import br.edu.securitystore.iam.identity.api.module.IdentityQuery;
 import br.edu.securitystore.platform.security.UserPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController @RequestMapping("/auth")
 public class AuthenticationController {
- private final AuthenticationService service;private final IdentityQuery identities;private final AuthoritiesQuery authorization;
- public AuthenticationController(AuthenticationService service,IdentityQuery identities,AuthoritiesQuery authorization){this.service=service;this.identities=identities;this.authorization=authorization;}
+ private final AuthenticationService service;private final IdentityQuery identities;private final AuthorizationQuery authorization;
+ public AuthenticationController(AuthenticationService service,IdentityQuery identities,AuthorizationQuery authorization){this.service=service;this.identities=identities;this.authorization=authorization;}
  public record LoginRequest(@Email @NotBlank String email,@NotBlank String password){}
  public record RefreshRequest(@NotBlank String refreshToken){}
  public record Me(Long id,String name,String email,Set<String> roles,Set<String> permissions){}

@@ -2,14 +2,14 @@ package br.edu.securitystore.iam.identity.api.http.controller;
 
 import br.edu.securitystore.iam.identity.core.application.IdentityService;
 import br.edu.securitystore.iam.identity.core.domain.Identity;
-import br.edu.securitystore.iam.authorization.api.module.AuthoritiesQuery;
+import br.edu.securitystore.iam.authorization.api.module.AuthorizationQuery;
 import jakarta.validation.Valid;import jakarta.validation.constraints.*;import java.util.*;
 import org.springframework.http.*;import org.springframework.security.access.prepost.PreAuthorize;import org.springframework.web.bind.annotation.*;
 
 @RestController @RequestMapping("/admin/users")
 public class AdminIdentityController {
- private final IdentityService identities;private final AuthoritiesQuery roles;
- public AdminIdentityController(IdentityService identities,AuthoritiesQuery roles){this.identities=identities;this.roles=roles;}
+ private final IdentityService identities;private final AuthorizationQuery roles;
+ public AdminIdentityController(IdentityService identities,AuthorizationQuery roles){this.identities=identities;this.roles=roles;}
  public record CreateUser(@NotBlank String name,@Email @NotBlank String email,@NotBlank @Size(min=8) String password){}
  public record UpdateUser(@NotBlank String name,@Email @NotBlank String email){}
  public record UserView(Long id,String name,String email,Identity.Status status,java.time.Instant createdAt,java.time.Instant updatedAt,Set<String> roles){}

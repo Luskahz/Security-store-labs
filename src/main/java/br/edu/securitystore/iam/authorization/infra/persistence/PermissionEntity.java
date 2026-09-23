@@ -1,5 +1,5 @@
 package br.edu.securitystore.iam.authorization.infra.persistence;
-import br.edu.securitystore.iam.authorization.core.domain.AuthorizationModels.Permission;
+import br.edu.securitystore.iam.authorization.core.domain.Permission;
 import jakarta.persistence.*;import java.time.Instant;
 @Entity @Table(name="permissions",uniqueConstraints=@UniqueConstraint(columnNames="code"))
 class PermissionEntity {

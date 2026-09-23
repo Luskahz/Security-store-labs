@@ -2,7 +2,7 @@ package br.edu.securitystore.iam.identity.infra;
 
 import br.edu.securitystore.iam.identity.core.application.IdentityService;
 import br.edu.securitystore.iam.identity.core.repository.IdentityRepository;
-import br.edu.securitystore.iam.authorization.api.module.AuthoritiesQuery;
+import br.edu.securitystore.iam.authorization.api.module.AuthorizationProvisioning;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +11,7 @@ import org.springframework.core.annotation.Order;
 
 @Configuration
 public class IdentityBootstrap {
- @Bean @Order(2) CommandLineRunner bootstrapAdmin(IdentityService identities,IdentityRepository repository,AuthoritiesQuery authorization,
+ @Bean @Order(2) CommandLineRunner bootstrapAdmin(IdentityService identities,IdentityRepository repository,AuthorizationProvisioning authorization,
    @Value("${security.bootstrap.admin.enabled:false}") boolean enabled,@Value("${security.bootstrap.admin.name:}") String name,
    @Value("${security.bootstrap.admin.email:}") String email,@Value("${security.bootstrap.admin.password:}") String password,
    @Value("${security.demo.enabled:false}") boolean demo){

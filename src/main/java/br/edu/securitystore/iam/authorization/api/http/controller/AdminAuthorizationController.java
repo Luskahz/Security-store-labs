@@ -1,7 +1,8 @@
 package br.edu.securitystore.iam.authorization.api.http.controller;
 
 import br.edu.securitystore.iam.authorization.core.application.AuthorizationService;
-import br.edu.securitystore.iam.authorization.core.domain.AuthorizationModels.*;
+import br.edu.securitystore.iam.authorization.core.domain.Permission;
+import br.edu.securitystore.iam.authorization.core.domain.Role;
 import br.edu.securitystore.iam.identity.api.module.IdentityQuery;
 import jakarta.validation.Valid;import jakarta.validation.constraints.*;import java.util.*;
 import org.springframework.http.*;import org.springframework.security.access.prepost.PreAuthorize;import org.springframework.web.bind.annotation.*;

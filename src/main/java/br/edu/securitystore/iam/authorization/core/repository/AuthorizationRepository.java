@@ -1,6 +1,7 @@
 package br.edu.securitystore.iam.authorization.core.repository;
 
-import br.edu.securitystore.iam.authorization.core.domain.AuthorizationModels.*;
+import br.edu.securitystore.iam.authorization.core.domain.Permission;
+import br.edu.securitystore.iam.authorization.core.domain.Role;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;

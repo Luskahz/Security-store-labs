@@ -1,6 +1,7 @@
 package br.edu.securitystore.iam.authorization.infra.persistence;
 
-import br.edu.securitystore.iam.authorization.core.domain.AuthorizationModels.*;
+import br.edu.securitystore.iam.authorization.core.domain.Permission;
+import br.edu.securitystore.iam.authorization.core.domain.Role;
 import br.edu.securitystore.iam.authorization.core.repository.AuthorizationRepository;
 import java.util.*;
 import org.springframework.stereotype.Repository;

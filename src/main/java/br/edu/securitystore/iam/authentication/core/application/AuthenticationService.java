@@ -45,7 +45,6 @@ public class AuthenticationService {
  @Transactional public void revokeOthers(Long identityId,String currentId){for(Session s:repository.sessions(identityId))if(!s.id().equals(currentId)&&s.status()==Session.Status.ACTIVE)revokeOwned(identityId,s.id(),Session.Status.REVOKED);}
  public List<Session> sessions(Long identityId){return repository.sessions(identityId);}
  public boolean accountEnabled(Long identityId){return repository.account(identityId).map(a->a.status()==AuthenticationAccount.Status.ENABLED).orElse(false);}
- public Optional<AuthenticationAccount> credential(Long identityId){return repository.account(identityId);}
  @Transactional public boolean active(Long identityId,String sessionId){
   Instant now=Instant.now();Session session=repository.session(sessionId).orElse(null);
   if(session==null||!session.identityId().equals(identityId)||!session.active(now)||!accountEnabled(identityId))return false;

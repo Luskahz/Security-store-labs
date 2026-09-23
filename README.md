@@ -19,15 +19,17 @@ O painel IAM fica em `http://localhost:8080/login.html`. O console H2 fica desab
 
 ## API inicial
 
-- `POST /api/iam/register` — cadastro
-- `GET /api/iam/me` — identidade autenticada
+- `POST /auth/login` e `POST /auth/refresh` — acesso por Bearer JWT
+- `GET /auth/me` — identidade autenticada
+- `/admin/users`, `/admin/roles`, `/admin/permissions` — gestão IAM
 - `GET /api/products` — catálogo público
 - `POST/DELETE /api/products/**` — administração de produtos
 - `POST /api/orders` e `GET /api/orders` — compras do usuário
 - `POST /api/orders/{id}/pay` — pagamento fictício
-- `PATCH /api/orders/{id}/delivery` — atualização de entrega por ADMIN
+- `PATCH /api/orders/{id}/delivery` — atualização de entrega por permissão
 
 Veja o planejamento em [`docs/backlog.md`](docs/backlog.md) e as regras do laboratório em [`docs/lab-rules.md`](docs/lab-rules.md).
+O estado das branches remotas está registrado em [`docs/repository-branches.md`](docs/repository-branches.md).
 
 ## Arquitetura
 

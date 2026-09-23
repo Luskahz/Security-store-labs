@@ -1,6 +1,8 @@
 package br.edu.securitystore.iam.authorization.core.application;
 
-import br.edu.securitystore.iam.authorization.core.domain.AuthorizationModels.*;
+import br.edu.securitystore.iam.authorization.core.domain.Permission;
+import br.edu.securitystore.iam.authorization.core.domain.Role;
+import br.edu.securitystore.iam.authorization.core.domain.Role.Status;
 import br.edu.securitystore.iam.authorization.core.domain.PermissionCode;
 import br.edu.securitystore.iam.authorization.core.repository.AuthorizationRepository;
 import java.time.Instant;
@@ -17,10 +19,10 @@ public class AuthorizationService {
     public Role role(Long id){return repository.role(id).orElseThrow(NoSuchElementException::new);}
     public Set<Long> permissionIds(Long roleId){role(roleId);return repository.permissionIds(roleId);}
     public List<Role> rolesFor(Long identityId){return repository.rolesForIdentity(identityId);}
-    public Set<String> roleNames(Long identityId){Set<String> result=new TreeSet<>();for(Role role:rolesFor(identityId))if(role.status()==RoleStatus.ACTIVE)result.add(role.name());return result;}
+    public Set<String> roleNames(Long identityId){Set<String> result=new TreeSet<>();for(Role role:rolesFor(identityId))if(role.status()==Status.ACTIVE)result.add(role.name());return result;}
     public Set<String> authorities(Long identityId){
         Set<String> result=new TreeSet<>();Set<Long> permissions=new HashSet<>();
-        for(Role role:rolesFor(identityId))if(role.status()==RoleStatus.ACTIVE){
+        for(Role role:rolesFor(identityId))if(role.status()==Status.ACTIVE){
             result.add("ROLE_"+role.name());
             permissions.addAll(repository.permissionIds(role.id()));
         }
@@ -30,7 +32,7 @@ public class AuthorizationService {
     @Transactional public Role createRole(String name,String description){
         String normalized=name.trim().toUpperCase(Locale.ROOT);
         if(repository.roleByName(normalized).isPresent())throw new IllegalArgumentException("Role já existe");
-        Instant now=Instant.now();return repository.saveRole(new Role(null,normalized,description,RoleStatus.ACTIVE,now,now));
+        Instant now=Instant.now();return repository.saveRole(new Role(null,normalized,description,Status.ACTIVE,now,now));
     }
     @Transactional public Role updateRole(Long id,String name,String description){
         Role old=role(id);String normalized=name.trim().toUpperCase(Locale.ROOT);
@@ -40,7 +42,7 @@ public class AuthorizationService {
     }
     @Transactional public Role setRoleEnabled(Long id,boolean enabled){
         Role old=role(id);if(old.name().equals("ADMIN")&&!enabled)throw new IllegalArgumentException("Role ADMIN é estrutural");
-        return repository.saveRole(new Role(id,old.name(),old.description(),enabled?RoleStatus.ACTIVE:RoleStatus.DISABLED,old.createdAt(),Instant.now()));
+        return repository.saveRole(new Role(id,old.name(),old.description(),enabled?Status.ACTIVE:Status.DISABLED,old.createdAt(),Instant.now()));
     }
     @Transactional public void deleteRole(Long id){if(role(id).name().equals("ADMIN"))throw new IllegalArgumentException("Role ADMIN é estrutural");repository.deleteRole(id);}
     @Transactional public void replacePermissions(Long roleId,Set<Long> ids){

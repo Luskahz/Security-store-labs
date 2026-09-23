@@ -29,7 +29,6 @@ public class IdentityService {
         return identity;
     }
     public Identity byId(Long id) { return identities.byId(id).orElseThrow(NoSuchElementException::new); }
-    public Identity byEmail(String email) { return identities.byEmail(normalize(email)).orElseThrow(NoSuchElementException::new); }
     public List<Identity> all() { return identities.all(); }
     @Transactional
     public Identity update(Long id, String name, String email) {

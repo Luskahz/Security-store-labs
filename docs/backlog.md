@@ -26,13 +26,13 @@ Problemas comuns retornam Problem Details; ainda falta cobrir sistematicamente v
 ## Épico 2 — IAM
 
 ### US-101 — Cadastrar usuário fictício (P0) — CONCLUÍDA
-Como visitante, quero criar conta com nome, e-mail e senha para comprar no laboratório. Aceite: e-mail único, validação básica e senha com BCrypt.
+Como administrador, quero criar contas com nome, e-mail e senha para o laboratório. Aceite: e-mail único, validação básica e senha com BCrypt.
 
 ### US-102 — Autenticar e consultar identidade (P0) — CONCLUÍDA
-Como usuário, quero autenticar via HTTP Basic e consultar `/api/iam/me`. Aceite: credenciais inválidas retornam 401.
+Como usuário, quero autenticar via `/auth/login` e consultar `/auth/me` com Bearer JWT. Aceite: credenciais e tokens inválidos retornam 401.
 
 ### US-103 — Autorizar por papel (P0) — CONCLUÍDA
-Como administrador, quero que operações administrativas exijam `ADMIN`; clientes usam `CUSTOMER`.
+Como administrador, quero que operações administrativas exijam permissions atribuídas por roles.
 
 ### US-104 — Implementar tokens de sessão (P1) — CONCLUÍDA
 Como usuário, quero login com token curto e renovação controlada. Aceite: expiração, logout/revogação e segredo fora do repositório.

@@ -1,1 +1,15 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Security Store Labs</title><link rel="stylesheet" href="styles.css"></head><body><header><h1>Security Store Labs</h1><p>Ambiente educacional — somente dados fictícios</p></header><main><section><h2>Acesso</h2><p><a href="/login.html">Entrar no painel IAM</a></p></section><section><h2>Produtos</h2><div id="products" class="grid"></div></section></main><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b1320"><title>Security Store Labs</title><link rel="stylesheet" href="/styles.css"></head>
+<body>
+  <header class="site-header"><a class="brand" href="/">Security <span>Store</span><small>LABS</small></a><nav><a href="#catalog">Produtos</a><a href="#orders">Meus pedidos</a><a href="/admin/index.html" id="admin-link" hidden>Administração</a></nav><div class="account"><span id="account-name">Visitante</span><a class="button secondary" id="login-link" href="/login.html">Entrar</a><button id="logout" class="secondary" hidden>Sair</button></div></header>
+  <main class="container">
+    <section class="hero"><div><p class="eyebrow">LOJA DE DEMONSTRAÇÃO</p><h1>Pratique segurança.<br><span>Compre com tranquilidade.</span></h1><p>Um ambiente educacional com produtos fictícios, pedidos simulados e acompanhamento de entrega.</p><a class="button" href="#catalog">Explorar produtos</a></div><div class="hero-mark" aria-hidden="true"><span>SS</span><i>LAB</i></div></section>
+    <p id="notice" class="notice" role="status" aria-live="polite"></p>
+    <section id="catalog" class="section"><div class="section-heading"><div><p class="eyebrow">CATÁLOGO</p><h2>Produtos do laboratório</h2></div><button id="refresh-products" class="secondary">Atualizar</button></div><div id="products" class="product-grid"><p class="muted">Carregando catálogo…</p></div></section>
+    <section id="orders" class="section"><div class="section-heading"><div><p class="eyebrow">ÁREA DO CLIENTE</p><h2>Meus pedidos</h2></div><button id="refresh-orders" class="secondary" hidden>Atualizar pedidos</button></div><div id="orders-content" class="orders-list"><article class="empty-state"><h3>Acompanhe suas compras</h3><p>Entre ou crie uma conta para comprar e acompanhar as entregas.</p><a class="button" href="/login.html">Entrar na loja</a></article></div></section>
+    <footer><span>Security Store Labs · Ambiente educacional</span><span>Todos os produtos e pagamentos são fictícios</span></footer>
+  </main>
+  <dialog id="checkout-dialog"><form id="checkout-form"><button type="button" class="dialog-close" aria-label="Fechar">×</button><p class="eyebrow">FINALIZAR PEDIDO</p><h2 id="checkout-title">Produto</h2><p id="checkout-price" class="muted"></p><label>Quantidade<input id="checkout-quantity" type="number" min="1" value="1" required></label><p id="checkout-total" class="checkout-total"></p><button id="checkout-submit" class="button" type="submit">Criar pedido</button></form></dialog>
+  <script type="module" src="/js/pages/store.js"></script>
+</body></html>

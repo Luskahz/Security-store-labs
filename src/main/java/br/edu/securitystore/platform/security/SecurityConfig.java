@@ -18,11 +18,11 @@ public class SecurityConfig {
  @Bean SecurityFilterChain security(HttpSecurity http,JwtAuthenticationFilter jwt) throws Exception {
   return http.csrf(csrf->csrf.disable()).sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
    .authorizeHttpRequests(auth->auth
-    .requestMatchers("/","/index.html","/styles.css","/app.js","/login.html","/css/**","/js/**","/admin/*.html","/auth/login","/auth/refresh").permitAll()
+    .requestMatchers("/","/index.html","/styles.css","/app.js","/login.html","/css/**","/js/**","/admin/*.html","/auth/login","/auth/refresh","/admin/users/register").permitAll()
     .requestMatchers(HttpMethod.GET,"/api/products").permitAll()
     .requestMatchers(HttpMethod.POST,"/api/products/**").hasAuthority("CATALOG_PRODUCT_WRITE")
     .requestMatchers(HttpMethod.DELETE,"/api/products/**").hasAuthority("CATALOG_PRODUCT_WRITE")
-    .requestMatchers(HttpMethod.PATCH,"/api/orders/**").hasAuthority("SALES_DELIVERY_UPDATE")
+    .requestMatchers(HttpMethod.PATCH,"/api/deliveries/**").hasAuthority("LOGISTICS_DELIVERY_UPDATE")
     .anyRequest().authenticated())
    .exceptionHandling(ex->ex.authenticationEntryPoint((request,response,error)->response.sendError(401))
     .accessDeniedHandler((request,response,error)->response.sendError(403)))

@@ -19,11 +19,10 @@ class OrderEntity {
     int quantity;
     @Column(nullable=false,precision=12,scale=2) BigDecimal total;
     @Enumerated(EnumType.STRING) Order.PaymentStatus paymentStatus;
-    @Enumerated(EnumType.STRING) Order.DeliveryStatus deliveryStatus;
     protected OrderEntity(){}
     OrderEntity(Order order){id=order.getId();customerId=order.getCustomerId();customerName=order.getCustomerName();customerEmail=order.getCustomerEmail();customerRole=order.getCustomerRole();
         productId=order.getProductId();productName=order.getProductName();productDescription=order.getProductDescription();productPrice=order.getProductPrice();
-        productStockAtPurchase=order.getProductStockAtPurchase();quantity=order.getQuantity();total=order.getTotal();paymentStatus=order.getPaymentStatus();deliveryStatus=order.getDeliveryStatus();}
+        productStockAtPurchase=order.getProductStockAtPurchase();quantity=order.getQuantity();total=order.getTotal();paymentStatus=order.getPaymentStatus();}
     Order toDomain(){return new Order(id,customerId,customerName,customerEmail,customerRole,productId,productName,productDescription,
-        productPrice,productStockAtPurchase,quantity,total,paymentStatus,deliveryStatus);}
+        productPrice,productStockAtPurchase,quantity,total,paymentStatus);}
 }

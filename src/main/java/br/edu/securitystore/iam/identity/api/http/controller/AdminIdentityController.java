@@ -11,9 +11,11 @@ public class AdminIdentityController {
  private final IdentityService identities;private final AuthorizationQuery roles;
  public AdminIdentityController(IdentityService identities,AuthorizationQuery roles){this.identities=identities;this.roles=roles;}
  public record CreateUser(@NotBlank String name,@Email @NotBlank String email,@NotBlank @Size(min=8) String password){}
+ public record RegisterUser(@NotBlank String name,@Email @NotBlank String email,@NotBlank @Size(min=8) String password){}
  public record UpdateUser(@NotBlank String name,@Email @NotBlank String email){}
  public record UserView(Long id,String name,String email,Identity.Status status,java.time.Instant createdAt,java.time.Instant updatedAt,Set<String> roles){}
  private UserView view(Identity identity){return new UserView(identity.id(),identity.name(),identity.email(),identity.status(),identity.createdAt(),identity.updatedAt(),roles.roles(identity.id()));}
+ @PostMapping("/register") public ResponseEntity<UserView> register(@Valid @RequestBody RegisterUser request){return ResponseEntity.status(HttpStatus.CREATED).body(view(identities.create(request.name(),request.email(),request.password())));}
  @GetMapping @PreAuthorize("hasAuthority('IDENTITY_USER_READ')") public List<UserView> all(){return identities.all().stream().map(this::view).toList();}
  @GetMapping("/{id}") @PreAuthorize("hasAuthority('IDENTITY_USER_READ')") public UserView one(@PathVariable Long id){return view(identities.byId(id));}
  @PostMapping @PreAuthorize("hasAuthority('IDENTITY_USER_CREATE')") public ResponseEntity<UserView> create(@Valid @RequestBody CreateUser request){return ResponseEntity.status(HttpStatus.CREATED).body(view(identities.create(request.name(),request.email(),request.password())));}

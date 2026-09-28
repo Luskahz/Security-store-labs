@@ -27,6 +27,17 @@ class ApiContractTests {
         mvc.perform(get("/api/products")).andExpect(status().isOk()).andExpect(jsonPath("$[0].name").exists());
     }
 
+    @Test void publicRegistrationCreatesCustomerAccount() throws Exception {
+        String email = "cliente." + java.util.UUID.randomUUID() + "@lab.local";
+        mvc.perform(post("/admin/users/register").contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(java.util.Map.of("name", "Cliente Novo", "email", email, "password", "Senha123!"))))
+                .andExpect(status().isCreated()).andExpect(jsonPath("$.name").value("Cliente Novo"))
+                .andExpect(jsonPath("$.roles[0]").value("USER"));
+        mvc.perform(post("/auth/login").contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(java.util.Map.of("email", email, "password", "Senha123!"))))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.accessToken").isNotEmpty());
+    }
+
     @Test void anonymousCannotCreateProduct() throws Exception {
         mvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"Invasor\",\"price\":1,\"stock\":1}"))
@@ -66,8 +77,12 @@ class ApiContractTests {
                 .andExpect(status().isOk()).andExpect(jsonPath("$.paymentStatus").value("PAID"));
         mvc.perform(get("/api/orders").header("Authorization", customer)).andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].customer.passwordHash").doesNotExist());
-        mvc.perform(patch("/api/orders/" + orderId + "/delivery").header("Authorization", customer).contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(patch("/api/deliveries/orders/" + orderId).header("Authorization", customer).contentType(MediaType.APPLICATION_JSON)
                 .content("{\"status\":\"SHIPPED\"}"))
                 .andExpect(status().isForbidden());
+        mvc.perform(get("/api/orders").header("Authorization", customer)).andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].delivery.status").value("PREPARING"))
+                .andExpect(jsonPath("$[0].delivery.trackingCode").value("LAB-%08d".formatted(orderId)))
+                .andExpect(jsonPath("$[0].delivery.estimatedDeliveryAt").isNotEmpty());
     }
 }

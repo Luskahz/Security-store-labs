@@ -14,7 +14,7 @@ Uma story está pronta quando possui código revisado, teste automatizado essenc
 Como estudante, quero executar um projeto Spring Boot para evoluir o laboratório. Aceite: Java 21, Maven, H2 e teste de contexto configurados.
 
 ### US-002 — Organizar módulos (P0) — CONCLUÍDA
-Como desenvolvedor, quero pacotes separados de IAM, catálogo e vendas para localizar responsabilidades facilmente.
+Como desenvolvedor, quero pacotes separados de IAM, catálogo, vendas e logística para localizar responsabilidades facilmente.
 
 ### US-003 — Documentar e observar a API (P1)
 Como estudante, quero OpenAPI e logs com correlação para entender chamadas sem registrar senhas, tokens ou dados de pagamento.
@@ -66,7 +66,10 @@ Como cliente, quero listar somente meus pedidos; ADMIN pode consultar todos.
 Como cliente, quero marcar meu pedido como pago usando um método fictício, sem armazenar cartão ou credencial financeira.
 
 ### US-304 — Atualizar entrega (P0) — CONCLUÍDA
-Como administrador, quero alterar o status logístico de um pedido.
+Como operador autorizado, quero alterar o status logístico de um pedido com transições válidas no módulo independente de logística.
+
+### US-306 — Consultar rastreio e previsão (P1) — PARCIAL
+Como cliente autorizado, quero consultar código fictício de rastreio, previsão simples e datas de expedição e entrega. A previsão atual é fixa em cinco dias corridos e precisa de endereço e dados de transportadora para estimativas reais.
 
 ### US-305 — Garantir idempotência e transações (P1) — PARCIAL
 Como sistema, quero impedir cobrança repetida e estoque negativo em requisições concorrentes.

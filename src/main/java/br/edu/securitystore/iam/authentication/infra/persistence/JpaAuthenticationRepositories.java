@@ -6,3 +6,9 @@ interface JpaRefreshTokenRepository extends JpaRepository<RefreshTokenEntity,Str
  @Lock(LockModeType.PESSIMISTIC_WRITE) Optional<RefreshTokenEntity> findByTokenHash(String hash);
  List<RefreshTokenEntity> findBySessionIdAndStatus(String sessionId,br.edu.securitystore.iam.authentication.core.domain.RefreshToken.Status status);
 }
+interface JpaPasswordResetTokenRepository extends JpaRepository<PasswordResetTokenEntity,Long>{
+ @Lock(LockModeType.PESSIMISTIC_WRITE) Optional<PasswordResetTokenEntity> findByTokenHash(String tokenHash);
+ Optional<PasswordResetTokenEntity> findTopByIdentityIdOrderByCreatedAtDesc(Long identityId);
+ void deleteByIdentityId(Long identityId);
+ void deleteByExpiresAtBefore(java.time.Instant instant);
+}

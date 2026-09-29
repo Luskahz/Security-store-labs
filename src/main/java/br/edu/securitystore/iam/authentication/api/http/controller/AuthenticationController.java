@@ -1,6 +1,7 @@
 package br.edu.securitystore.iam.authentication.api.http.controller;
 
 import br.edu.securitystore.iam.authentication.core.application.AuthenticationService;
+import br.edu.securitystore.iam.authentication.infra.persistence.PasswordRecoveryService;
 import br.edu.securitystore.iam.authentication.core.domain.Session;
 import br.edu.securitystore.iam.authorization.api.module.AuthorizationQuery;
 import br.edu.securitystore.iam.identity.api.module.IdentityQuery;
@@ -16,16 +17,21 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController @RequestMapping("/auth")
 public class AuthenticationController {
- private final AuthenticationService service;private final IdentityQuery identities;private final AuthorizationQuery authorization;
- public AuthenticationController(AuthenticationService service,IdentityQuery identities,AuthorizationQuery authorization){this.service=service;this.identities=identities;this.authorization=authorization;}
+ private final AuthenticationService service;private final PasswordRecoveryService recovery;private final IdentityQuery identities;private final AuthorizationQuery authorization;
+ public AuthenticationController(AuthenticationService service,PasswordRecoveryService recovery,IdentityQuery identities,AuthorizationQuery authorization){this.service=service;this.recovery=recovery;this.identities=identities;this.authorization=authorization;}
  public record LoginRequest(@Email @NotBlank String email,@NotBlank String password){}
  public record RefreshRequest(@NotBlank String refreshToken){}
+ public record RecoveryRequest(@Email @NotBlank String email){}
+ public record PasswordResetRequest(@NotBlank String token,@NotBlank @Size(min=12,max=128) String newPassword){}
+ public record RecoveryResponse(String message){}
  public record Me(Long id,String name,String email,Set<String> roles,Set<String> permissions){}
  public record SessionView(String id,Session.Status status,java.time.Instant createdAt,java.time.Instant lastSeenAt,java.time.Instant expiresAt,String ipAddress,String userAgent,boolean current){
   static SessionView from(Session s,String current){var status=s.status()==Session.Status.ACTIVE&&!s.expiresAt().isAfter(java.time.Instant.now())?Session.Status.EXPIRED:s.status();return new SessionView(s.id(),status,s.createdAt(),s.lastSeenAt(),s.expiresAt(),s.ipAddress(),s.userAgent(),s.id().equals(current));}
  }
  @PostMapping("/login") public AuthenticationService.Tokens login(@Valid @RequestBody LoginRequest request,HttpServletRequest http){return service.login(request.email(),request.password(),http.getRemoteAddr(),http.getHeader("User-Agent"));}
  @PostMapping("/refresh") public AuthenticationService.Tokens refresh(@Valid @RequestBody RefreshRequest request){return service.refresh(request.refreshToken());}
+ @PostMapping("/password-recovery") public RecoveryResponse recover(@Valid @RequestBody RecoveryRequest request,HttpServletRequest http){recovery.request(request.email(),http.getRemoteAddr());return new RecoveryResponse(PasswordRecoveryService.GENERIC_MESSAGE);}
+ @PostMapping("/password-reset") public void resetPassword(@Valid @RequestBody PasswordResetRequest request){recovery.reset(request.token(),request.newPassword());}
  @PostMapping("/logout") public void logout(@AuthenticationPrincipal UserPrincipal principal){principal=required(principal);service.logout(principal.identityId(),principal.sessionId());}
  @GetMapping("/me") public Me me(@AuthenticationPrincipal UserPrincipal principal){principal=required(principal);var identity=identities.byId(principal.identityId()).orElseThrow();return new Me(identity.id(),identity.name(),identity.email(),authorization.roles(identity.id()),authorization.authorities(identity.id()).stream().filter(a->!a.startsWith("ROLE_")).collect(java.util.stream.Collectors.toCollection(java.util.TreeSet::new)));}
  @GetMapping("/me/sessions") public List<SessionView> sessions(@AuthenticationPrincipal UserPrincipal principal){principal=required(principal);String id=principal.sessionId();return service.sessions(principal.identityId()).stream().map(s->SessionView.from(s,id)).toList();}

@@ -11,6 +11,6 @@ import org.springframework.stereotype.Component;
     public Order.CustomerSnapshot byId(Long identityId) {
         var identity = identities.byId(identityId).orElseThrow();
         String role=authorization.roles(identity.id()).stream().sorted().findFirst().orElse("USER");
-        return new Order.CustomerSnapshot(identity.id(), identity.name(), identity.email(), role);
+        return new Order.CustomerSnapshot(identity.id(), identity.name(), identity.email(), role,identity.phone(),identity.street(),identity.number(),identity.complement(),identity.neighborhood(),identity.city(),identity.state(),identity.postalCode(),identity.deliveryProfileComplete());
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class CatalogDemoData {
     @Bean CommandLineRunner seedProducts(ProductRepository products) {
         return args -> {
+            if (!products.findAll().isEmpty()) return;
             products.save(new Product(null,"Teclado Lab","Produto fictício",new BigDecimal("149.90"),10));
             products.save(new Product(null,"Mouse Lab","Produto fictício",new BigDecimal("79.90"),20));
         };

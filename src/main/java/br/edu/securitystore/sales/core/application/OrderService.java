@@ -33,6 +33,8 @@ public class OrderService {
     public OrderResponse create(Long identityId, Long productId, int quantity) {
         var product = products.reserve(productId, quantity);
         var customer = customers.byId(identityId);
+        if(!customer.profileComplete())
+            throw new IllegalArgumentException("Complete seu telefone e endereço no perfil antes de comprar");
         Order order = orders.save(new Order(customer, product, quantity));
         deliveries.createForOrder(order.getId());
         return response(order);

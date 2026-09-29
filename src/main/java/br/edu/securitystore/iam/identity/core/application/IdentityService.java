@@ -38,6 +38,24 @@ public class IdentityService {
         return identities.save(current.rename(name.trim(),normalized,Instant.now()));
     }
     @Transactional
+    public Identity updateProfile(Long id,String cpf,String phone,String street,String number,String complement,String neighborhood,String city,String state,String postalCode) {
+        if(cpf==null||phone==null||postalCode==null||street==null||number==null||neighborhood==null||city==null||state==null)throw new IllegalArgumentException("Preencha os campos obrigatórios do perfil");
+        String digitsCpf=cpf.replaceAll("\\D","");String digitsPhone=phone.replaceAll("\\D","");String digitsPostal=postalCode.replaceAll("\\D","");
+        if(!validCpf(digitsCpf))throw new IllegalArgumentException("CPF inválido");
+        if(!digitsPhone.matches("[0-9]{10,11}"))throw new IllegalArgumentException("Telefone inválido");
+        if(!digitsPostal.matches("[0-9]{8}"))throw new IllegalArgumentException("CEP inválido");
+        Identity current=byId(id);
+        if(!digitsCpf.equals(current.cpf())&&identities.byCpf(digitsCpf).isPresent())throw new IllegalArgumentException("CPF já cadastrado");
+        return identities.save(current.withProfile(digitsCpf,digitsPhone,street.trim(),number.trim(),complement==null?"":complement.trim(),neighborhood.trim(),city.trim(),state.trim().toUpperCase(java.util.Locale.ROOT),digitsPostal,Instant.now()));
+    }
+    private boolean validCpf(String cpf) {
+        if(cpf==null||!cpf.matches("[0-9]{11}")||cpf.chars().distinct().count()==1)return false;
+        int sum=0;for(int i=0;i<9;i++)sum+=(cpf.charAt(i)-'0')*(10-i);int first=(sum*10)%11;if(first==10)first=0;
+        if(first!=cpf.charAt(9)-'0')return false;
+        sum=0;for(int i=0;i<10;i++)sum+=(cpf.charAt(i)-'0')*(11-i);int second=(sum*10)%11;if(second==10)second=0;
+        return second==cpf.charAt(10)-'0';
+    }
+    @Transactional
     public Identity setEnabled(Long id, boolean enabled) {
         Identity updated=identities.save(byId(id).withStatus(enabled?Identity.Status.ACTIVE:Identity.Status.DISABLED,Instant.now()));
         if (!enabled) sessions.revokeAll(id);

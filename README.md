@@ -1,13 +1,14 @@
 # Security Store Labs
 
-Loja full stack mínima para aulas **autorizadas** de cibersegurança. O projeto usa Spring Boot, Java 21, H2 e uma interface estática em HTML/CSS/JS.
+Loja full stack mínima para aulas **autorizadas** de cibersegurança. O projeto usa Spring Boot, Java 21, MySQL com Hibernate e uma interface estática em HTML/CSS/JS.
 
 ## Executar localmente
 
-Com Java 21 e Maven instalados, execute na raiz do projeto. Exemplo em Bash:
+Com Java 21, Maven e MySQL instalados, inicie o serviço MySQL e execute `mvn spring-boot:run` na raiz. A configuração padrão conecta em `localhost:3306/security_store` com `root`/`aluno`. O Hibernate cria e atualiza as tabelas a partir das entidades JPA (`ddl-auto=update`); não há inicialização por scripts SQL. Exemplo em Bash para personalizar as chaves e criar um administrador:
 
 ```bash
-export JWT_SECRET="$(openssl rand -base64 32)"
+export JWT_SECRET="<segredo Base64 de 32 bytes, gerado uma única vez>"
+export PII_ENCRYPTION_KEY="<chave Base64 de 32 bytes, gerada uma única vez>"
 export ADMIN_BOOTSTRAP_ENABLED=true
 export ADMIN_NAME="Administrador do Lab"
 export ADMIN_EMAIL="admin@lab.local"
@@ -15,12 +16,13 @@ export ADMIN_PASSWORD="defina-uma-senha-forte"
 mvn spring-boot:run
 ```
 
-Abra `http://localhost:8080`. O banco H2 é em memória e reinicia ao parar a aplicação. O registro público cria contas com role USER; o primeiro acesso administrativo só é provisionado se as variáveis de bootstrap forem definidas antes da inicialização.
+Abra `http://localhost:8080`. O registro público cria contas com role USER; o primeiro acesso administrativo só é provisionado se as variáveis de bootstrap forem definidas antes da inicialização.
 
 Exemplo em PowerShell:
 
 ```powershell
-$env:JWT_SECRET = [Convert]::ToBase64String([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+$env:JWT_SECRET = '<segredo Base64 de 32 bytes, gerado uma única vez>'
+$env:PII_ENCRYPTION_KEY = '<chave Base64 de 32 bytes, gerada uma única vez>'
 $env:ADMIN_BOOTSTRAP_ENABLED = 'true'
 $env:ADMIN_NAME = 'Administrador do Lab'
 $env:ADMIN_EMAIL = 'admin@lab.local'
@@ -28,7 +30,11 @@ $env:ADMIN_PASSWORD = '<defina uma senha forte>'
 mvn spring-boot:run
 ```
 
-O login e cadastro ficam em `http://localhost:8080/login.html`; a administração aparece para contas com permissions. O console H2 fica desabilitado. Todos os dados são fictícios e recriados a cada execução.
+Os valores padrão de `JWT_SECRET` e `PII_ENCRYPTION_KEY` servem apenas para execução local e testes; configure chaves próprias em ambientes compartilhados ou de produção. Guarde a chave PII: trocá-la impede descriptografar dados pessoais já persistidos. Para outro servidor ou credenciais MySQL, defina `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` e `SPRING_DATASOURCE_PASSWORD`. Para recuperação de senha por e-mail, configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD` e `APP_MAIL_FROM`; por padrão, autenticação e STARTTLS ficam ligados e podem ser desativados com `SMTP_AUTH=false` e `SMTP_STARTTLS=false` quando o servidor local não os exigir. Sem SMTP, a aplicação inicia normalmente e o endpoint mantém a resposta genérica, mas não envia mensagem.
+
+O scheduler de laboratório inicia automaticamente junto com a aplicação e registra no console o início, o sucesso ou a falha de cada ação. Na inicialização, cria duas contas fictícias; a cada 10 segundos, cadastra um produto e tenta criar pedidos; a cada 30 segundos, tenta criar uma conta e cadastrar um cartão; a cada 60 segundos, avança uma entrega pendente. Os dados são persistidos no MySQL local. As operações chamam os serviços internos e não geram tráfego HTTP interceptável.
+
+O login e cadastro ficam em `http://localhost:8080/login.html`; a recuperação fica em `/password-reset.html`; administração aparece para contas com permissions. A configuração padrão usa MySQL e Hibernate com `ddl-auto=update`, então os dados permanecem depois que a aplicação para. H2 fica reservado aos testes.
 
 ## API inicial
 

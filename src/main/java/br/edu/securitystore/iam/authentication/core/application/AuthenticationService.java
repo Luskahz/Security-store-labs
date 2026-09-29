@@ -19,6 +19,7 @@ public class AuthenticationService {
  public AuthenticationService(AuthenticationRepository repository,IdentityLookup identities,PasswordVerifier passwords,AccessTokenIssuer issuer,
          @Value("${security.refresh-token-expiration:2592000}") long refreshSeconds){this.repository=repository;this.identities=identities;this.passwords=passwords;this.issuer=issuer;this.refreshTtl=Duration.ofSeconds(refreshSeconds);}
  @Transactional public void createAccount(Long identityId,String password){Instant now=Instant.now();repository.save(new AuthenticationAccount(identityId,passwords.hash(password),AuthenticationAccount.Status.ENABLED,null,now,now));}
+ @Transactional public void resetPassword(Long identityId,String password){var account=repository.account(identityId).orElseThrow(InvalidCredentialsException::new);repository.save(account.withPasswordHash(passwords.hash(password),Instant.now()));revokeAll(identityId);}
  @Transactional public Tokens login(String email,String password,String ip,String agent){
   var identity=identities.byEmail(email).filter(IdentityLookup.Identity::active).orElseThrow(InvalidCredentialsException::new);
   var account=repository.account(identity.id()).filter(a->a.status()==AuthenticationAccount.Status.ENABLED).orElseThrow(InvalidCredentialsException::new);

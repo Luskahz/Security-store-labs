@@ -4,5 +4,7 @@ target/
 *.iml
 *.log
 .env
+application-local.properties
+src/main/resources/application-local.properties
 data/
 .m2-cache/

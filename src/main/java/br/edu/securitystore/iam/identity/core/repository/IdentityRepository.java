@@ -7,6 +7,7 @@ import java.util.Optional;
 public interface IdentityRepository {
     Optional<Identity> byId(Long id);
     Optional<Identity> byEmail(String email);
+    Optional<Identity> byCpf(String cpf);
     List<Identity> all();
     Identity save(Identity identity);
 }

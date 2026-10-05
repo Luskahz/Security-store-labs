@@ -23,6 +23,20 @@ class ApiContractTests {
         return "Bearer " + json.readTree(response).get("accessToken").asText();
     }
 
+    private void completeDeliveryProfile(String authorization) throws Exception {
+        mvc.perform(put("/identity/me/profile").header("Authorization", authorization)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"cpf\":\"52998224725\",\"phone\":\"11999999999\",\"street\":\"Rua Teste\",\"number\":\"10\",\"neighborhood\":\"Centro\",\"city\":\"Sao Paulo\",\"state\":\"SP\",\"postalCode\":\"01001000\"}"))
+                .andExpect(status().isOk());
+    }
+
+    private String savedCardToken(String authorization) throws Exception {
+        String response = mvc.perform(post("/api/payment-cards").header("Authorization", authorization)
+                .contentType(MediaType.APPLICATION_JSON).content("{\"cardNumber\":\"4111111111111111\"}"))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        return json.readTree(response).get("token").asText();
+    }
+
     @Test void publicCatalogIsReadable() throws Exception {
         mvc.perform(get("/api/products")).andExpect(status().isOk()).andExpect(jsonPath("$[0].name").exists());
     }
@@ -58,7 +72,9 @@ class ApiContractTests {
     }
 
     @Test void orderResponseDoesNotExposePasswordHash() throws Exception {
-        mvc.perform(post("/api/orders").header("Authorization", token("aluno@lab.local", "Aluno123!"))
+        String customer = token("aluno@lab.local", "Aluno123!");
+        completeDeliveryProfile(customer);
+        mvc.perform(post("/api/orders").header("Authorization", customer)
                 .contentType(MediaType.APPLICATION_JSON).content("{\"productId\":1,\"quantity\":1}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.customer.passwordHash").doesNotExist())
@@ -67,13 +83,15 @@ class ApiContractTests {
 
     @Test void orderLifecycleAndOwnership() throws Exception {
         String customer = token("aluno@lab.local", "Aluno123!");
+        completeDeliveryProfile(customer);
         String orderJson = mvc.perform(post("/api/orders").header("Authorization", customer).contentType(MediaType.APPLICATION_JSON)
                 .content("{\"productId\":2,\"quantity\":1}"))
                 .andExpect(status().isCreated()).andExpect(jsonPath("$.paymentStatus").value("PENDING"))
                 .andReturn().getResponse().getContentAsString();
         long orderId = json.readTree(orderJson).get("id").asLong();
+        String cardToken = savedCardToken(customer);
         mvc.perform(post("/api/orders/" + orderId + "/pay").header("Authorization", customer).contentType(MediaType.APPLICATION_JSON)
-                .content("{\"method\":\"MOCK\"}"))
+                .content(json.writeValueAsString(java.util.Map.of("cardToken", cardToken))))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.paymentStatus").value("PAID"));
         mvc.perform(get("/api/orders").header("Authorization", customer)).andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].customer.passwordHash").doesNotExist());

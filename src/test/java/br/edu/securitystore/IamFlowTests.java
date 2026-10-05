@@ -141,16 +141,22 @@ class IamFlowTests {
  @Test void changingEmailKeepsIdentityAndExistingOrder()throws Exception{
   String student=login("aluno@lab.local","Aluno123!").get("accessToken").asText();
   String admin=login("admin@lab.local","Admin123!").get("accessToken").asText();
+  mvc.perform(put("/identity/me/profile").header("Authorization",bearer(student)).contentType(MediaType.APPLICATION_JSON)
+   .content("{\"cpf\":\"52998224725\",\"phone\":\"11999999999\",\"street\":\"Rua Teste\",\"number\":\"10\",\"neighborhood\":\"Centro\",\"city\":\"Sao Paulo\",\"state\":\"SP\",\"postalCode\":\"01001000\"}"))
+   .andExpect(status().isOk());
   long orderId=json.readTree(mvc.perform(post("/api/orders").header("Authorization",bearer(student))
    .contentType(MediaType.APPLICATION_JSON).content("{\"productId\":2,\"quantity\":1}"))
    .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString()).get("id").asLong();
+  String cardToken=json.readTree(mvc.perform(post("/api/payment-cards").header("Authorization",bearer(student))
+   .contentType(MediaType.APPLICATION_JSON).content("{\"cardNumber\":\"4111111111111111\"}"))
+   .andExpect(status().isOk()).andReturn().getResponse().getContentAsString()).get("token").asText();
   mvc.perform(patch("/admin/users/2").header("Authorization",bearer(admin)).contentType(MediaType.APPLICATION_JSON)
    .content("{\"name\":\"Aluno Demo\",\"email\":\"novo@lab.local\"}"))
    .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(2));
   mvc.perform(get("/auth/me").header("Authorization",bearer(student)))
    .andExpect(status().isOk()).andExpect(jsonPath("$.email").value("novo@lab.local"));
   mvc.perform(post("/api/orders/"+orderId+"/pay").header("Authorization",bearer(student))
-   .contentType(MediaType.APPLICATION_JSON).content("{\"method\":\"MOCK\"}"))
+   .contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(java.util.Map.of("cardToken",cardToken))))
    .andExpect(status().isOk()).andExpect(jsonPath("$.paymentStatus").value("PAID"));
   login("novo@lab.local","Aluno123!");
  }

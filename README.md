@@ -4,11 +4,13 @@ Loja full stack mínima para aulas **autorizadas** de cibersegurança. O projeto
 
 ## Executar localmente
 
-Com Java 21, Maven e MySQL instalados, inicie o serviço MySQL e execute `mvn spring-boot:run` na raiz. A configuração padrão conecta em `localhost:3306/security_store` com `root`/`aluno`. O Hibernate cria e atualiza as tabelas a partir das entidades JPA (`ddl-auto=update`); não há inicialização por scripts SQL. Exemplo em Bash para personalizar as chaves e criar um administrador:
+Com Java 21, Maven e MySQL instalados, inicie o serviço MySQL e execute `mvn spring-boot:run` na raiz. Configure as credenciais do banco e as chaves de aplicação por variáveis de ambiente; localmente, também é possível usar o arquivo ignorado `src/main/resources/application-local.properties`. O Hibernate cria e atualiza as tabelas a partir das entidades JPA (`ddl-auto=update`); não há inicialização por scripts SQL. Exemplo em Bash para configurar o banco, as chaves e criar um administrador:
 
 ```bash
 export JWT_SECRET="<segredo Base64 de 32 bytes, gerado uma única vez>"
 export PII_ENCRYPTION_KEY="<chave Base64 de 32 bytes, gerada uma única vez>"
+export SPRING_DATASOURCE_USERNAME="root"
+export SPRING_DATASOURCE_PASSWORD="<senha local do MySQL>"
 export ADMIN_BOOTSTRAP_ENABLED=true
 export ADMIN_NAME="Administrador do Lab"
 export ADMIN_EMAIL="admin@lab.local"
@@ -23,6 +25,8 @@ Exemplo em PowerShell:
 ```powershell
 $env:JWT_SECRET = '<segredo Base64 de 32 bytes, gerado uma única vez>'
 $env:PII_ENCRYPTION_KEY = '<chave Base64 de 32 bytes, gerada uma única vez>'
+$env:SPRING_DATASOURCE_USERNAME = 'root'
+$env:SPRING_DATASOURCE_PASSWORD = '<senha local do MySQL>'
 $env:ADMIN_BOOTSTRAP_ENABLED = 'true'
 $env:ADMIN_NAME = 'Administrador do Lab'
 $env:ADMIN_EMAIL = 'admin@lab.local'
@@ -30,7 +34,7 @@ $env:ADMIN_PASSWORD = '<defina uma senha forte>'
 mvn spring-boot:run
 ```
 
-Os valores padrão de `JWT_SECRET` e `PII_ENCRYPTION_KEY` servem apenas para execução local e testes; configure chaves próprias em ambientes compartilhados ou de produção. Guarde a chave PII: trocá-la impede descriptografar dados pessoais já persistidos. Para outro servidor ou credenciais MySQL, defina `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` e `SPRING_DATASOURCE_PASSWORD`. Para recuperação de senha por e-mail, configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD` e `APP_MAIL_FROM`; por padrão, autenticação e STARTTLS ficam ligados e podem ser desativados com `SMTP_AUTH=false` e `SMTP_STARTTLS=false` quando o servidor local não os exigir. Sem SMTP, a aplicação inicia normalmente e o endpoint mantém a resposta genérica, mas não envia mensagem.
+Defina uma chave PII estável e guarde uma cópia segura: trocá-la impede descriptografar dados pessoais já persistidos. Para outro servidor MySQL, defina também `SPRING_DATASOURCE_URL`. Para recuperação de senha por e-mail, configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD` e `APP_MAIL_FROM`; por padrão, autenticação e STARTTLS ficam ligados e podem ser desativados com `SMTP_AUTH=false` e `SMTP_STARTTLS=false` quando o servidor local não os exigir. Sem SMTP, a aplicação inicia normalmente e o endpoint mantém a resposta genérica, mas não envia mensagem.
 
 O scheduler de laboratório inicia automaticamente junto com a aplicação e registra no console o início, o sucesso ou a falha de cada ação. Na inicialização, cria duas contas fictícias; a cada 10 segundos, cadastra um produto e tenta criar pedidos; a cada 30 segundos, tenta criar uma conta e cadastrar um cartão; a cada 60 segundos, avança uma entrega pendente. Os dados são persistidos no MySQL local. As operações chamam os serviços internos e não geram tráfego HTTP interceptável.
 

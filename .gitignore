@@ -4,6 +4,8 @@ target/
 *.iml
 *.log
 .env
+start.local.bat
+start.local.sh
 application-local.properties
 src/main/resources/application-local.properties
 data/

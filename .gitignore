@@ -6,6 +6,7 @@ target/
 .env
 start.local.bat
 start.local.sh
+.mvn/wrapper/maven-wrapper.jar
 application-local.properties
 src/main/resources/application-local.properties
 data/

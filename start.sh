@@ -14,6 +14,7 @@ fi
 : "${USE_DOCKER_MYSQL:=true}"
 : "${MYSQL_CONTAINER:=security-store-mysql}"
 export SPRING_DATASOURCE_USERNAME SPRING_DATASOURCE_PASSWORD
+export MAVEN_USER_HOME="${MAVEN_USER_HOME:-$PROJECT_DIR/.m2-cache}"
 
 for command_name in java mvn; do
   if ! command -v "$command_name" >/dev/null 2>&1; then
@@ -62,4 +63,4 @@ if [[ "$USE_DOCKER_MYSQL" == "true" ]]; then
 fi
 
 echo "Iniciando Security Store Labs em http://localhost:8080"
-exec mvn spring-boot:run
+exec bash "$PROJECT_DIR/mvnw" spring-boot:run

@@ -1,0 +1,18 @@
+rem Copie este arquivo como start.local.bat e substitua os valores de exemplo.
+rem Gere chaves Base64 aleatorias com pelo menos 32 bytes; nunca reutilize estes placeholders.
+set "SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/security_store?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America%2FSao_Paulo"
+set "SPRING_DATASOURCE_USERNAME=root"
+set "SPRING_DATASOURCE_PASSWORD=SUBSTITUA_PELA_SENHA_DO_MYSQL_LOCAL"
+set "MYSQL_SERVICE_NAME=MySQL80"
+set "MYSQL_PORT=3306"
+set "JWT_SECRET=SUBSTITUA_POR_CHAVE_BASE64_ALEATORIA_DE_32_BYTES"
+set "PII_ENCRYPTION_KEY=SUBSTITUA_POR_OUTRA_CHAVE_BASE64_ALEATORIA_DE_32_BYTES"
+set "ADMIN_BOOTSTRAP_ENABLED=true"
+set "ADMIN_NAME=Administrador do Lab"
+set "ADMIN_EMAIL=admin@lab.local"
+set "ADMIN_PASSWORD=SUBSTITUA_POR_UMA_SENHA_FORTE"
+set "SMTP_HOST="
+set "SMTP_PORT=0"
+set "SMTP_USERNAME="
+set "SMTP_PASSWORD="
+set "APP_MAIL_FROM=no-reply@localhost"

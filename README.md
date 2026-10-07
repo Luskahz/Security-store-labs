@@ -11,34 +11,13 @@ Loja educacional para laboratórios autorizados de cibersegurança. O backend é
 
 ### Windows, sem IDE
 
-Crie `start.local.bat` na raiz com seus valores (substitua os campos entre `<...>`):
-
-```bat
-@echo off
-set "JWT_SECRET=<chave Base64>"
-set "PII_ENCRYPTION_KEY=<outra chave Base64>"
-set "SPRING_DATASOURCE_PASSWORD=<senha do MySQL local>"
-set "ADMIN_BOOTSTRAP_ENABLED=true"
-set "ADMIN_NAME=Administrador do Lab"
-set "ADMIN_EMAIL=admin@lab.local"
-set "ADMIN_PASSWORD=<senha de pelo menos 8 caracteres>"
-```
+Copie `start.example.bat` para `start.local.bat` na raiz e substitua os valores de exemplo pelas configurações locais. O arquivo de exemplo lista as variáveis aceitas pelo script e pela aplicação; `start.local.bat` é ignorado pelo Git.
 
 Execute `start.bat` no Prompt de Comando ou `./start.bat` no PowerShell. O padrão é o serviço `MySQL80`; se o serviço tiver outro nome, defina `MYSQL_SERVICE_NAME` no `start.local.bat`. Se `application-local.properties` existir e as chaves não estiverem no ambiente, o script ativa o perfil `local` para carregar essa configuração ignorada pelo Git.
 
 ### Linux, inclusive Kali
 
-Crie `start.local.sh` na raiz:
-
-```bash
-export JWT_SECRET='<chave Base64>'
-export PII_ENCRYPTION_KEY='<outra chave Base64>'
-export SPRING_DATASOURCE_PASSWORD='aluno'
-export ADMIN_BOOTSTRAP_ENABLED=true
-export ADMIN_NAME='Administrador do Lab'
-export ADMIN_EMAIL='admin@lab.local'
-export ADMIN_PASSWORD='<senha de pelo menos 8 caracteres>'
-```
+Copie `start.example.sh` para `start.local.sh` e substitua os valores de exemplo. Esse arquivo é carregado pelo `start.sh` e ignorado pelo Git.
 
 Execute `bash start.sh`. O script encontra a raiz pela própria localização; não depende de `/home/kali` nem exige IDE. Se o usuário não tiver acesso ao Docker, o script usa `sudo docker`.
 

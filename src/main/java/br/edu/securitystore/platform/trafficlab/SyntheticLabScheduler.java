@@ -64,7 +64,7 @@ public class SyntheticLabScheduler {
         log.info("Traffic Lab: scheduler ativo; contas sintéticas prontas={}", userIds.size());
     }
 
-    @Scheduled(fixedRate = 30_000, initialDelay = 30_000)
+    @Scheduled(fixedRate = 300_000, initialDelay = 300_000)
     public void createUser() {
         if (!canRun("criar conta sintética")) return;
         if (userIds.size() >= 1_000) {
@@ -78,7 +78,7 @@ public class SyntheticLabScheduler {
         }
     }
 
-    @Scheduled(fixedRate = 10_000, initialDelay = 10_000)
+    @Scheduled(fixedRate = 300_000, initialDelay = 300_000)
     public void replenishAndPurchase() {
         if (!canRun("repor produto e criar pedidos")) return;
         String productName = "Item de laboratório " + (++productSequence);
@@ -86,7 +86,7 @@ public class SyntheticLabScheduler {
                 catalog.create(productName, "Produto sintético do Traffic Lab", new BigDecimal("9.99"), 3));
         if (product == null) return;
 
-        List<Long> buyers = randomUsers(2);
+        List<Long> buyers = randomUsers(1);
         if (buyers.isEmpty()) {
             log.warn("Traffic Lab: pedidos não criados; nenhuma conta sintética disponível.");
             return;

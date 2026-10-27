@@ -9,9 +9,9 @@ function renderShell(){
   document.querySelector('#content').innerHTML=`
     <section class="card">
       <div class="row"><label for="table-select">Tabela</label><select id="table-select"><option value="">Carregando tabelas…</option></select><button id="refresh-tables" class="secondary" type="button">Atualizar</button></div>
-      <p class="muted">Visualização somente leitura dos dados reais do banco. Pode incluir dados pessoais e hashes. Até ${PAGE_SIZE} registros por página.</p>
+      <p class="muted">Visualização somente leitura dos registros do banco, em páginas de até ${PAGE_SIZE} itens.</p>
     </section>
-    <section id="table-details" class="card"><p class="muted">Selecione uma tabela para visualizar as colunas e os registros.</p></section>
+    <section id="table-details" class="card"><p class="muted">Selecione uma tabela para visualizar os registros.</p></section>
     <div id="pager" class="row"></div>`;
   document.querySelector('#table-select').onchange=event=>{selectedTable=event.target.value||null;offset=0;loadTable()};
   document.querySelector('#refresh-tables').onclick=loadTables;
@@ -23,7 +23,7 @@ async function loadTables(){
     const select=document.querySelector('#table-select');
     select.innerHTML='<option value="">Selecione uma tabela</option>'+tables.map(table=>`<option value="${escapeHtml(table.name)}">${escapeHtml(table.name)} · ${escapeHtml(table.type)}</option>`).join('');
     if(selectedTable&&tables.some(table=>table.name===selectedTable)){select.value=selectedTable;await loadTable()}
-    else{selectedTable=null;document.querySelector('#table-details').innerHTML='<p class="muted">Selecione uma tabela para visualizar as colunas e os registros.</p>';document.querySelector('#pager').innerHTML=''}
+    else{selectedTable=null;document.querySelector('#table-details').innerHTML='<p class="muted">Selecione uma tabela para visualizar os registros.</p>';document.querySelector('#pager').innerHTML=''}
     message(`${tables.length} tabela(s)/view(s) encontrada(s).`);
   }catch(error){message(error.message,true)}
 }
@@ -41,9 +41,8 @@ async function loadTable(){
   try{
     const data=await api(`/admin/database/tables/${encodeURIComponent(selectedTable)}?offset=${offset}&limit=${PAGE_SIZE}`);
     const columns=data.columns;
-    details.innerHTML=`<div class="row"><h2>${escapeHtml(data.name)}</h2><span class="pill">${escapeHtml(data.type)}</span><span class="muted">${data.rows.length} registro(s) nesta página · posição ${data.offset+1}–${data.offset+data.rows.length}</span></div>
-      <h3>Estrutura</h3><div class="table-scroll"><table><thead><tr><th>Coluna</th><th>Tipo</th><th>Nulo</th><th>Chave</th></tr></thead><tbody>${columns.map(column=>`<tr><td>${escapeHtml(column.name)}</td><td>${escapeHtml(column.type)}</td><td>${column.nullable?'Sim':'Não'}</td><td>${column.primaryKey?'PK':'—'}</td></tr>`).join('')}</tbody></table></div>
-      <h3>Registros</h3><div class="table-scroll"><table><thead><tr>${columns.map(column=>`<th>${escapeHtml(column.name)}</th>`).join('')}</tr></thead><tbody>${data.rows.length?data.rows.map(row=>`<tr>${columns.map(column=>`<td>${displayValue(row[column.name])}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${Math.max(columns.length,1)}" class="muted">Tabela sem registros.</td></tr>`}</tbody></table></div>`;
+    details.innerHTML=`<div class="row"><h2>${escapeHtml(data.name)}</h2><span class="pill">${escapeHtml(data.type)}</span><span class="muted">${data.rows.length} registro(s) nesta página · posição ${data.rows.length?data.offset+1:0}–${data.offset+data.rows.length}</span></div>
+      <div class="table-scroll"><table><thead><tr>${columns.map(column=>`<th>${escapeHtml(column.name)}</th>`).join('')}</tr></thead><tbody>${data.rows.length?data.rows.map(row=>`<tr>${columns.map(column=>`<td>${displayValue(row[column.name])}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${Math.max(columns.length,1)}" class="muted">Tabela sem registros.</td></tr>`}</tbody></table></div>`;
     renderPager(data);
     message(`Exibindo ${data.name}.`);
   }catch(error){details.innerHTML=`<p class="error">${escapeHtml(error.message)}</p>`;document.querySelector('#pager').innerHTML='';message(error.message,true)}
@@ -62,4 +61,3 @@ try{
   renderShell();
   await loadTables();
 }catch(error){message(error.message,true)}
-

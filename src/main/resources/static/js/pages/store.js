@@ -52,9 +52,9 @@ function renderOrders(orders){
 async function loadOrders(){if(!me)return;try{renderOrders(await api('/api/orders'))}catch(error){$('#orders-content').innerHTML=`<p class="empty-state error">Não foi possível carregar os pedidos: ${escapeHtml(error.message)}</p>`}}
 
 async function loadAccount(){
-  $('#account-name').textContent='Visitante';$('#login-link').hidden=false;$('#logout').hidden=true;$('#admin-link').hidden=true;$('#cards-link').hidden=true;$('#payment-cards').hidden=true;$('#refresh-orders').hidden=true;me=null;
+  $('#account-name').textContent='Visitante';$('#login-link').hidden=false;$('#logout').hidden=true;$('#admin-link').hidden=true;$('#database-link').hidden=true;$('#cards-link').hidden=true;$('#payment-cards').hidden=true;$('#refresh-orders').hidden=true;me=null;
   if(!tokens().access){$('#orders-content').innerHTML='<article class="empty-state"><h3>Acompanhe suas compras</h3><p>Entre ou crie uma conta para comprar e acompanhar as entregas.</p><a class="button" href="/login.html">Entrar na loja</a></article>';return}
-  try{me=await api('/auth/me');$('#account-name').textContent=me.name;$('#login-link').hidden=true;$('#logout').hidden=false;$('#admin-link').hidden=me.permissions.length===0;$('#cards-link').hidden=false;$('#payment-cards').hidden=false;$('#profile-link').hidden=false;$('#profile').hidden=false;$('#refresh-orders').hidden=false;await loadOrders();await loadCards();await loadProfile()}
+  try{me=await api('/auth/me');$('#account-name').textContent=me.name;$('#login-link').hidden=true;$('#logout').hidden=false;$('#admin-link').hidden=me.permissions.length===0;$('#database-link').hidden=!can('DATABASE_INSPECT_READ');$('#cards-link').hidden=false;$('#payment-cards').hidden=false;$('#profile-link').hidden=false;$('#profile').hidden=false;$('#refresh-orders').hidden=false;await loadOrders();await loadCards();await loadProfile()}
   catch(error){if(tokens().access){clearTokens();me=null;notify('Sua sessão expirou. Entre novamente.',true)}}
 }
 
@@ -69,3 +69,4 @@ $('#logout').onclick=async()=>{try{await api('/auth/logout',{method:'POST'})}cat
 document.querySelectorAll('.dialog-close').forEach(button=>button.onclick=()=>button.closest('dialog').close());$('#add-card-open').onclick=()=>$('#card-dialog').showModal();document.querySelectorAll('dialog').forEach(dialog=>dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()}));
 
 await loadAccount();await loadProducts();
+

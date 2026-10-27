@@ -23,6 +23,8 @@ Execute `bash start.sh`. O script encontra a raiz pela própria localização; n
 
 Abra [http://localhost:8080](http://localhost:8080). O login fica em `/login.html`. No Windows, a janela do `start.bat` permanece aberta enquanto o Spring Boot está em execução; use `Ctrl+C` ou feche a janela para encerrar a aplicação. Se o script tiver iniciado o serviço MySQL, ele o para ao encerrar normalmente; se o serviço já estava rodando, deixa-o ativo. No Linux, o volume Docker conserva os dados do banco.
 
+Para publicar o app em uma rede local com HTTPS usando Nginx como proxy reverso, siga [HTTPS com Nginx no Linux/Kali](docs/nginx-https.md). A configuração mantém o Spring Boot em `127.0.0.1:8080` e publica somente Nginx nas portas 80/443.
+
 ## Configuração
 
 As propriedades padrão usam `root` / `aluno` e `localhost:3306/security_store` com `createDatabaseIfNotExist=true`. No Windows, configure em `start.local.bat` as credenciais que você definiu no MySQL local. No Linux, `start.sh` cria o contêiner com a senha `SPRING_DATASOURCE_PASSWORD` (padrão `aluno`). Se o contêiner já existir, mudar a variável não altera a senha que o MySQL já guarda. Para outro banco ou porta, configure `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` e `SPRING_DATASOURCE_PASSWORD`; no Windows ajuste também `MYSQL_PORT` se necessário.
@@ -42,3 +44,4 @@ SMTP é opcional. Para envio de recuperação de senha, configure `SMTP_HOST`, `
 - `/admin/` — páginas administrativas para contas autorizadas.
 
 O índice em [docs/README.md](docs/README.md) reúne instalação, arquitetura, regras do laboratório e documentação de cada módulo. O scheduler de laboratório registra ações sintéticas no console e usa os serviços internos; ele não produz tráfego HTTP próprio.
+

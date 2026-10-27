@@ -3,6 +3,7 @@
 ## Comece aqui
 
 - [Instalação e execução](../README.md)
+- [HTTPS com Nginx no Linux/Kali](nginx-https.md)
 - [Regras do laboratório](lab-rules.md)
 - [Backlog](backlog.md)
 - [Revisão de segurança](security-review.md)
@@ -22,3 +23,4 @@ O projeto é um único aplicativo Spring Boot organizado em módulos por domíni
 | Config | Configurações gerais da aplicação | [Config](../src/main/java/br/edu/securitystore/config/docs/README.md) |
 
 O IAM detalha [Identity](../src/main/java/br/edu/securitystore/iam/identity/docs/README.md), [Authentication](../src/main/java/br/edu/securitystore/iam/authentication/docs/README.md) e [Authorization](../src/main/java/br/edu/securitystore/iam/authorization/docs/README.md).
+
